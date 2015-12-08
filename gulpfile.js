@@ -24,12 +24,16 @@ var gulp = require('gulp'),
     //images files
     imagemin = require('gulp-imagemin');
 
-var filePath = "./assets-dev",
-	PATH = {};
-	PATH.srcFiles = filePath + "/src/**";
-	PATH.srcCss = filePath + "/src/css/**";
-	PATH.srcJs = filePath + "/src/js/**";
-	PATH.destFiles = filePath + "/**";
+var devFilePath = "./assets-dev",
+	minFilePath = "./assets-min";
+
+var PATH = {};
+
+	PATH.srcHtml = devFilePath + "/src/**";
+	PATH.srcCss = devFilePath + "/src/css/**";
+	PATH.srcJs = devFilePath + "/src/js/**";
+
+	PATH.destFiles = minFilePath + "/**";
 
 /* ------------ tools ------------ */
 gulp.task('reload', [''], function(){
@@ -40,9 +44,10 @@ gulp.task('browser-sync', function() {
     browserSync({
         // files: "**",
         server: {
-            baseDir: "./assets-dev/html",
+            baseDir: "./",
             directory: true
-        }
+        },
+        port: 3030
     });
 });
 
@@ -54,6 +59,13 @@ gulp.task('templates', function(){
 
 
 /* ------------compile HTML ------------ */
+gulp.task('buildHtml',function() {
+    return gulp.src(filePath.page)
+        .pipe(contentIncluder({
+            includerReg:/<!\-\-include\s+"([^"]+)"\-\->/g
+        })).pipe(gulp.dest(filePath.build));
+});
+
 gulp.task('minify', function() {
   return gulp.src('src/*.html')
     .pipe(htmlmin({collapseWhitespace: true}))
@@ -88,13 +100,6 @@ gulp.task('concat-css', function () {
     .pipe(gulp.dest('out/'));
 });
 
-/* ------------ compile HTML ------------ */
-gulp.task('buildHtml',function() {
-    return gulp.src(filePath.page)
-        .pipe(contentIncluder({
-            includerReg:/<!\-\-include\s+"([^"]+)"\-\->/g
-        })).pipe(gulp.dest(filePath.build));
-});
 
 /* ------------compile JS ------------ */
 
