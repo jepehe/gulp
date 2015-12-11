@@ -109,8 +109,8 @@ gulp.task('minjs', function() {
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task("compileEs6", function () {
-  return gulp.src("assets-dev/src/js/es6.js")
+gulp.task("babel",() => {
+  return gulp.src("./assets-dev/src/js/es6.js")
     .pipe(babel())
     .pipe(gulp.dest("./"));
 });
