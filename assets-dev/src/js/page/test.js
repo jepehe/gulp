@@ -1,20 +1,25 @@
-var user = [
-      {name:"kevin",age:"26"},
-      {name:"kg",age:"27"},
-      {name:"ho",age:"28"}
-    ];
+require('chebaba.js');
 
-React.render(  
-    <div>  
-    {  
-    user.map(function (info) {  
-    return <div className="txt">Hello, {info.name}!age:{info.age}</div>  
-    })  
-    }  
-    </div>,  
-    document.getElementById('root')  
-    );      
+testReq("kg",28);
 
-user.map(function (info) {  
-    return <div className="txt">Hello, {info.name}!age:{info.age}</div>  
-    })  
+// var user = [
+//       {name:"kevin",age:"26"},
+//       {name:"kg",age:"27"},
+//       {name:"ho",age:"28"}
+//     ];
+
+// React.render(  
+//     <div>  
+//     {  
+//     user.map(function (info) {  
+//     return <div className="txt">Hello, {info.name}!age:{info.age}</div>  
+//     })  
+//     }  
+//     </div>,  
+//     document.getElementById('root')  
+//     );      
+
+// user.map(function (info) {  
+//     return <div className="txt">Hello, {info.name}!age:{info.age}</div>  
+//     })  
+

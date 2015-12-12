@@ -1,8 +1,11 @@
+require('comp.js');
 
 let x = 1;
 let y = 2;
 
 console.log(`${x} + ${y} = ${x + y}`);
+
+testReq("kg",28);
 
 var s = new Set();
 

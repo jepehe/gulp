@@ -5,7 +5,9 @@ var gulp = require('gulp'),
 	rename = require('gulp-rename'),
 	sourcemaps = require("gulp-sourcemaps"),
 	replace = require('gulp-replace'),
-    
+    webpack = require('webpack'),
+    webpackConfig = require("./webpack.config.js"),
+
 	//css files
     less = require("gulp-less"),
     concatCss = require('gulp-concat-css'),
@@ -57,7 +59,22 @@ gulp.task('templates', function(){
     .pipe(gulp.dest('build/file.txt'));
 });
 
+gulp.task("webpack", function(callback) {
+    var myConfig = Object.create(webpackConfig);
+    // run webpack
+    webpack(
+        // configuration
+        myConfig
+    , function(err, stats) {
+        // if(err) throw new gutil.PluginError("webpack", err);
+        // gutil.log("[webpack]", stats.toString({
+        //     // output options
+        // }));
+        callback();
+    });
+});
 
+//gulp.watch('app/src/**/*.js', ['webpack']);
 /* ------------compile HTML ------------ */
 gulp.task('buildHtml',function() {
     return gulp.src(filePath.page)
