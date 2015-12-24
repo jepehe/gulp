@@ -19,9 +19,10 @@ module.exports = {
     module: {
         //加载器配置
         loaders: [
+            {test: /\.js$/, exclude: /node_modules/, loaders: ['babel'] },
        		{test: /\.css$/, loader: "style-loader!css-loader" },
             {test: /\.html$/, loader: "html-loader" },
-            {test: /\.(png|jpg)$/, loader: 'url-loader?limit=8192'}
+            {test: /\.(png|jpg|gif|svg)$/, loader: 'url-loader?limit=8192'}
         ]
     },
     //其它解决方案配置

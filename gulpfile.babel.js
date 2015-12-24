@@ -6,7 +6,9 @@ var gulp = require('gulp'),
 	sourcemaps = require("gulp-sourcemaps"),
 	replace = require('gulp-replace'),
     webpack = require('webpack'),
-    webpackConfig = require("./webpack.config.js"),
+    gutil = require('gulp-util'),
+    WebpackDevServer = require('webpack-dev-server'),
+    getWebpackConfig = require("./webpack.config.js"),
 
 	//css files
     less = require("gulp-less"),
@@ -29,21 +31,22 @@ var gulp = require('gulp'),
 var devFilePath = "./assets-dev",
 	minFilePath = "./assets-min";
 
-var PATH = {};
+let filePath = {};
+filePath.page = ['./assets-dev/**/*.html'];
+filePath.js = ['./assets-dev/src/**/*.js'];
+filePath.css = ['./assets-dev/src/**/*.css'];
+filePath.img = ['./assets-dev/images/**/*.jpg', './assets-dev/images/**/*.png', './assets-dev/images/**/*.gif',, './assets-dev/images/**/*.svg'];
 
-	PATH.srcHtml = devFilePath + "/src/**";
-	PATH.srcCss = devFilePath + "/src/css/**";
-	PATH.srcJs = devFilePath + "/src/js/**";
+/* ------------ tools ------------ */ 
 
-	PATH.destFiles = minFilePath + "/**";
+/* ------------ RELOAD ------------ */
+gulp.task('reload',() => {
+  browserSync.reload()
+});
 
-/* ------------ tools ------------ */
-gulp.task('reload', [''], function(){
-    browserSync.reload()
-});    
-
-gulp.task('browser-sync', function() {
-    browserSync({
+/* ------------ SERVE ------------ */
+gulp.task('serve', function() {
+  browserSync({
         // files: "**",
         server: {
             baseDir: "./",
@@ -51,6 +54,10 @@ gulp.task('browser-sync', function() {
         },
         port: 3030
     });
+  // var _tmpArr = [].concat(filePath.page, filePath.css, filePath.js,filePath.img);
+  // gulp.watch(_tmpArr).on('change', function() {
+  //   gulp.start('reload');
+  // });
 });
 
 gulp.task('templates', function(){
@@ -59,22 +66,6 @@ gulp.task('templates', function(){
     .pipe(gulp.dest('build/file.txt'));
 });
 
-gulp.task("webpack", function(callback) {
-    var myConfig = Object.create(webpackConfig);
-    // run webpack
-    webpack(
-        // configuration
-        myConfig
-    , function(err, stats) {
-        // if(err) throw new gutil.PluginError("webpack", err);
-        // gutil.log("[webpack]", stats.toString({
-        //     // output options
-        // }));
-        callback();
-    });
-});
-
-//gulp.watch('app/src/**/*.js', ['webpack']);
 /* ------------compile HTML ------------ */
 gulp.task('buildHtml',function() {
     return gulp.src(filePath.page)
@@ -145,13 +136,55 @@ gulp.src('src/img/*.{png,jpg,gif,ico}')
 
 });
 
+/*-----------------webpack--------------------------*/
+gulp.task("webpack", function(callback) {
 
+    var myConfig = Object.create(getWebpackConfig);
+    // run webpack
+    webpack(
+        // configuration
+        myConfig
+    , function(err, stats) {
+        // if(err) throw new gutil.PluginError("webpack", err);
+        // gutil.log("[webpack]", stats.toString({
+        //     // output options
+        // }));
+        callback();
+    });
+});
 
-gulp.task('default', ["browser-sync"]);
-// gulp.task('default', () => {
-//     return gulp.src('/assets-dev/src/js/common/*.js')
-//         .pipe(babel({
-//             presets: ['es2015']
-//         }))
-//         .pipe(gulp.dest('./build'));
-// });
+gulp.task('webpack-dev-server', function() {
+  var webpackConfig = getWebpackConfig;
+  return new WebpackDevServer(webpack(getWebpackConfig), {
+    publicPath: "/",
+    stats: webpackConfig.devServer.stats
+  }).listen(3030, 'localhost', function(err) {
+    if (err) {
+      throw new gutil.PluginError('webpack-dev-server', err);
+    }
+    gutil.log('[webpack-dev-server]', 'http://localhost:3030/webpack-dev-server/');
+  });
+});
+
+gulp.task('webpack:build', function(callback) {
+  // Modify some webpack config options
+  var myConfig = Object.create(getWebpackConfig);
+
+  myConfig.plugins = myConfig.plugins.concat(
+    new webpack.optimize.DedupePlugin()
+  );
+
+  // Run webpack
+  webpack(myConfig, function(err, stats) {
+    if (err) {
+      throw new gutil.PluginError('webpack:build', err);
+    }
+
+    gutil.log('[webpack:build]', stats.toString({
+      colors: true
+    }));
+
+    callback();
+  });
+});
+
